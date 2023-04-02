@@ -5,7 +5,13 @@ import {
   getStringData,
 } from "../service/async_storage";
 
-const apiAddExpanse = async (item_id, price, transaction, quantity) => {
+const apiAddExpanse = async (
+  item_id,
+  category_id,
+  price,
+  transaction,
+  quantity
+) => {
   console.log("API TRIGER");
   const jwt = await getStringData("@jwt");
   const req = await fetch(`${API_URL}/api/expanses`, {
@@ -17,6 +23,7 @@ const apiAddExpanse = async (item_id, price, transaction, quantity) => {
     body: JSON.stringify({
       data: {
         item: item_id,
+        category: category_id,
         price: price,
         transaction: transaction,
         quantity: quantity,

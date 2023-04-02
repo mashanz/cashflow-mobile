@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getStringData } from "./service/async_storage";
 import {
   View,
   Text,
@@ -10,6 +11,14 @@ import {
 import login from "./api/login";
 
 export default function Login({ navigation }) {
+  useEffect(() => {
+    const getJwt = async () => {
+      const jwt = await getStringData("@jwt");
+      if (jwt) navigation.navigate("Tabs");
+    };
+    getJwt();
+  }, []);
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const handleLogin = async () => {

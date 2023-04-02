@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+import { storeStringData } from "./service/async_storage";
 import items, { addItems } from "./api/items";
 
 export default function SearchItem({ navigation }) {
@@ -37,15 +38,17 @@ export default function SearchItem({ navigation }) {
             <Pressable
               key={i}
               style={styles.item}
-              onPress={() =>
+              onPress={async () => {
+                await storeStringData("@item_id", String(item["id"]));
+                await storeStringData("@item_name", item["attributes"]["name"]);
                 navigation.navigate("Tabs", {
                   screen: "Add Expanse",
                   params: {
-                    id: item["id"],
+                    item_id: item["id"],
                     item: item["attributes"]["name"],
                   },
-                })
-              }
+                });
+              }}
             >
               <Text>{item["attributes"]["name"]}</Text>
             </Pressable>
@@ -59,8 +62,13 @@ export default function SearchItem({ navigation }) {
           onPress={async () => {
             setLoading(true);
             await addItems(query)
-              .then((res) => {
+              .then(async (res) => {
                 if (res["data"]) {
+                  await storeStringData("@item_id", String(res["data"]["id"]));
+                  await storeStringData(
+                    "@item_name",
+                    res["data"]["attributes"]["name"]
+                  );
                   navigation.navigate("Tabs", {
                     screen: "Add Expanse",
                     params: {

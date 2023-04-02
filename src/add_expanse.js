@@ -9,12 +9,17 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import apiAddExpanse from "./api/expanses";
+import { getStringData } from "./service/async_storage";
 
 export default function AddExpanse({ route, navigation }) {
   const [date, setDate] = useState(new Date(Date.now()));
   const [show, setShow] = useState(false);
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [item_id, setItemId] = useState(0);
+  const [item_name, setItemName] = useState("");
+  const [category_id, setCategoryId] = useState(0);
+  const [category_name, setCategoryName] = useState("");
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -22,20 +27,26 @@ export default function AddExpanse({ route, navigation }) {
     setDate(currentDate);
   };
 
-  useEffect(() => {
-    console.log("ADD EXPANSE SCREEN");
-  });
-
-  console.log(route.params?.item || "");
+  const getLocalData = async () => {
+    const item_id = await getStringData("@item_id");
+    const item_name = await getStringData("@item_name");
+    const category_id = await getStringData("@category_id");
+    const category_name = await getStringData("@category_name");
+    setItemId(item_id);
+    setItemName(item_name);
+    setCategoryId(category_id);
+    setCategoryName(category_name);
+  };
+  getLocalData();
 
   return (
     <View style={styles.container}>
       <Pressable onPress={() => navigation.navigate("Cari Item")}>
-        <Text style={styles.input}>{route.params?.item || ""}</Text>
+        <Text style={styles.input}>{item_name || ""}</Text>
       </Pressable>
 
       <Pressable onPress={() => navigation.navigate("Cari Category")}>
-        <Text style={styles.input}>{route.params?.category || ""}</Text>
+        <Text style={styles.input}>{category_name || ""}</Text>
       </Pressable>
 
       <TextInput
@@ -71,23 +82,32 @@ export default function AddExpanse({ route, navigation }) {
       <Pressable
         style={styles.button}
         onPress={async () => {
-          console.log("save");
-          const item = route.params?.id || 0;
-          const transaction = date.toISOString();
-          console.log(item, transaction);
-          await apiAddExpanse(item, price, transaction, quantity)
-            .then((res) => {
-              console.log(res);
-              Alert.alert("Success", "Berhasil di simpan");
-              navigation.navigate("Tabs", {
-                screen: "Home",
+          if (
+            item_id &&
+            category_id &&
+            price &&
+            date.toISOString() &&
+            quantity
+          ) {
+            await apiAddExpanse(
+              item_id,
+              category_id,
+              price,
+              date.toISOString(),
+              quantity
+            )
+              .then((res) => {
+                Alert.alert("Success", "Berhasil di simpan");
+                navigation.navigate("Tabs", {
+                  screen: "Home",
+                });
+              })
+              .catch(() => {
+                Alert.alert("Error", "Unable to save Expanses");
               });
-            })
-            .catch(() => {
-              console.log("fail");
-              Alert.alert("Error", "Unable to save Expanses");
-            });
-          console.log("done save");
+          } else {
+            Alert.alert("Error", "Please fill all the field");
+          }
         }}
       >
         <Text

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+import { storeStringData } from "./service/async_storage";
 import categories, { addCategories } from "./api/categories";
 
 export default function SearchCategory({ navigation }) {
@@ -37,15 +38,20 @@ export default function SearchCategory({ navigation }) {
             <Pressable
               key={i}
               style={styles.item}
-              onPress={() =>
+              onPress={async () => {
+                await storeStringData("@category_id", String(item["id"]));
+                await storeStringData(
+                  "@category_name",
+                  item["attributes"]["name"]
+                );
                 navigation.navigate("Tabs", {
                   screen: "Add Expanse",
                   params: {
-                    id: item["id"],
+                    category_id: item["id"],
                     category: item["attributes"]["name"],
                   },
-                })
-              }
+                });
+              }}
             >
               <Text>{item["attributes"]["name"]}</Text>
             </Pressable>
@@ -59,12 +65,20 @@ export default function SearchCategory({ navigation }) {
           onPress={async () => {
             setLoading(true);
             await addCategories(query)
-              .then((res) => {
+              .then(async (res) => {
                 if (res["data"]) {
+                  await storeStringData(
+                    "@category_id",
+                    String(res["data"]["id"])
+                  );
+                  await storeStringData(
+                    "@category_name",
+                    res["data"]["attributes"]["name"]
+                  );
                   navigation.navigate("Tabs", {
                     screen: "Add Expanse",
                     params: {
-                      id: res["data"]["id"],
+                      category_id: res["data"]["id"],
                       category: res["data"]["attributes"]["name"],
                     },
                   });
