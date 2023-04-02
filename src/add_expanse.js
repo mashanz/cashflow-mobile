@@ -1,15 +1,8 @@
-import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Button,
-} from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function AddExpanse() {
+export default function AddExpanse({ route, navigation }) {
   const [date, setDate] = useState(new Date(Date.now()));
   const [show, setShow] = useState(false);
 
@@ -19,9 +12,18 @@ export default function AddExpanse() {
     setDate(currentDate);
   };
 
+  useEffect(() => {
+    console.log("ADD EXPANSE SCREEN");
+  });
+
+  console.log(route.params?.item || "");
+
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} placeholder="Nama Barang" />
+      <Pressable onPress={() => navigation.navigate("Cari Item")}>
+        <Text style={styles.input}>{route.params?.item || ""}</Text>
+      </Pressable>
+
       <TextInput
         keyboardType="numeric"
         style={styles.input}

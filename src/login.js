@@ -1,15 +1,51 @@
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import login from "./api/login";
 
-export default function Login() {
+export default function Login({ navigation }) {
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const handleLogin = async () => {
+    console.log("submit login");
+    await login(identifier, password)
+      .then((res) => {
+        if (res.jwt) {
+          navigation.navigate("Tabs");
+        } else Alert.alert("Error", res.error.message);
+      })
+      .catch((err) => {
+        Alert.alert("Error", "Unable connect to the server");
+      });
+  };
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} placeholder="Email" />
       <TextInput
+        autoCapitalize="none"
+        onChangeText={(text) => {
+          setIdentifier(text);
+        }}
+        style={styles.input}
+        placeholder="Email"
+      />
+      <TextInput
+        onChangeText={(text) => {
+          setPassword(text);
+        }}
         style={styles.input}
         secureTextEntry={true}
         placeholder="Password"
       />
-      <Pressable style={styles.button}>
+      <Pressable
+        onPress={async () => await handleLogin()}
+        style={styles.button}
+      >
         <Text
           style={{ color: "white", textAlign: "center", fontWeight: "bold" }}
         >

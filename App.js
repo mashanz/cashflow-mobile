@@ -4,8 +4,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./src/home";
 import AddExpanse from "./src/add_expanse";
 import Login from "./src/login";
+import SearchItem from "./src/search_item";
 
-export function TabNav() {
+function TabNav() {
   const Tab = createBottomTabNavigator();
   return (
     <Tab.Navigator>
@@ -22,7 +23,12 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Tabs" component={TabNav} />
+        <Stack.Screen
+          name="Tabs"
+          options={{ headerShown: false }}
+          component={TabNav}
+        />
+        <Stack.Screen name="Cari Item" component={SearchItem} />
       </Stack.Navigator>
     </NavigationContainer>
   );
