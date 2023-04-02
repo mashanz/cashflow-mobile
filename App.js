@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Home from "./src/home";
 import AddExpanse from "./src/add_expanse";
 import Login from "./src/login";
@@ -11,8 +12,28 @@ function TabNav() {
   const Tab = createBottomTabNavigator();
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Add Expanse" component={AddExpanse} />
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name="home" size={24} color={focused ? "blue" : "gray"} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Add Expanse"
+        component={AddExpanse}
+        options={{
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name="add-circle"
+              size={24}
+              color={focused ? "red" : "gray"}
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
