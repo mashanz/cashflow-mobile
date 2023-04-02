@@ -5,6 +5,22 @@ import {
   getStringData,
 } from "../service/async_storage";
 
+export async function getExpanse() {
+  const jwt = await getStringData("@jwt");
+  const req = await fetch(
+    `${API_URL}/api/expanses?populate=*&sort=price%3Adesc`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+    }
+  );
+  const res = await req.json();
+  return res;
+}
+
 const apiAddExpanse = async (
   item_id,
   category_id,
