@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { View, Text, TextInput, Pressable } from "react-native";
-import items from "./api/items";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import items, { addItems } from "./api/items";
 
 export default function SearchItem({ navigation }) {
   const [loading, setLoading] = useState(false);
@@ -15,42 +22,61 @@ export default function SearchItem({ navigation }) {
         onChangeText={async (text) => {
           setLoading(true);
           setQuery(text);
-          const res = await items(text);
-          console.log(res["data"]);
-          setResult(res["data"]);
+          await items(text)
+            .then((res) => {
+              setResult(res["data"]);
+            })
+            .catch(() => Alert.alert("Error", "Something Error"));
           setLoading(false);
         }}
       />
       {loading ? <Text>Loading...</Text> : null}
-      {result.map((item, i) => {
-        console.log("loop", item["attributes"]["name"]);
-        return (
-          <Pressable
-            key={i}
-            style={{ padding: 16 }}
-            onPress={() =>
-              navigation.navigate("Tabs", {
-                screen: "Add Expanse",
-                params: {
-                  id: item["id"],
-                  item: item["attributes"]["name"],
-                },
-              })
-            }
-          >
-            <Text>{item["attributes"]["name"]}</Text>
-          </Pressable>
-        );
-      })}
-      {result.length == 0 && query !== "" ? (
+      <View>
+        {result.map((item, i) => {
+          return (
+            <Pressable
+              key={i}
+              style={styles.item}
+              onPress={() =>
+                navigation.navigate("Tabs", {
+                  screen: "Add Expanse",
+                  params: {
+                    id: item["id"],
+                    item: item["attributes"]["name"],
+                  },
+                })
+              }
+            >
+              <Text>{item["attributes"]["name"]}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {result.length == 0 && query !== "" && !loading ? (
         <Pressable
           style={{ padding: 20, backgroundColor: "blue" }}
-          onPress={() =>
-            navigation.navigate("Tabs", {
-              screen: "Add Expanse",
-              params: { item: "Nama Item" },
-            })
-          }
+          onPress={async () => {
+            setLoading(true);
+            await addItems(query)
+              .then((res) => {
+                if (res["data"]) {
+                  navigation.navigate("Tabs", {
+                    screen: "Add Expanse",
+                    params: {
+                      id: res["data"]["id"],
+                      item: res["data"]["attributes"]["name"],
+                    },
+                  });
+                } else {
+                  Alert.alert("Error", res["error"]["message"]);
+                }
+              })
+              .catch(() => {
+                Alert.alert("Error", "Unable to save");
+              });
+            setLoading(false);
+          }}
         >
           <Text
             style={{ textAlign: "center", color: "white", fontWeight: "bold" }}
@@ -62,3 +88,11 @@ export default function SearchItem({ navigation }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  item: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderColor: "gray",
+  },
+});
