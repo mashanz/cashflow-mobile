@@ -34,6 +34,10 @@ export default function AddExpanse({ route, navigation }) {
         <Text style={styles.input}>{route.params?.item || ""}</Text>
       </Pressable>
 
+      <Pressable onPress={() => navigation.navigate("Cari Category")}>
+        <Text style={styles.input}>{route.params?.category || ""}</Text>
+      </Pressable>
+
       <TextInput
         keyboardType="numeric"
         style={styles.input}

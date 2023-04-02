@@ -1,9 +1,5 @@
 import { API_URL } from "@env";
-import {
-  storeObjectData,
-  storeStringData,
-  getStringData,
-} from "../service/async_storage";
+import { getStringData } from "../service/async_storage";
 
 export async function addItems(name) {
   const jwt = await getStringData("@jwt");

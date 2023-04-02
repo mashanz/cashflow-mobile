@@ -5,6 +5,7 @@ import Home from "./src/home";
 import AddExpanse from "./src/add_expanse";
 import Login from "./src/login";
 import SearchItem from "./src/search_item";
+import SearchCategory from "./src/search_category";
 
 function TabNav() {
   const Tab = createBottomTabNavigator();
@@ -29,6 +30,7 @@ export default function App() {
           component={TabNav}
         />
         <Stack.Screen name="Cari Item" component={SearchItem} />
+        <Stack.Screen name="Cari Category" component={SearchCategory} />
       </Stack.Navigator>
     </NavigationContainer>
   );
